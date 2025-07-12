@@ -85,7 +85,7 @@ Agora gere as {$numberOfQuestions} perguntas sobre: {$topic}
                 'Content-Type' => 'application/json',
             ])->withoutVerifying() // Desabilita verificação SSL temporariamente
             ->timeout(120)->post('https://api.groq.com/openai/v1/chat/completions', [
-                'model' => 'llama-3.1-70b-versatile',
+                'model' => 'llama3-70b-8192',
                 'messages' => [
                     [
                         'role' => 'user',

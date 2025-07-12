@@ -86,7 +86,6 @@ class StudyPlanController extends Controller
                 if (json_last_error() === JSON_ERROR_NONE) {
                     // Garantir que o plano tenha a estrutura esperada
                     $studyPlan = $this->validateStudyPlanStructure($studyPlan);
-                    
                     return response()->json($studyPlan);
                 }
             }
@@ -203,29 +202,47 @@ Crie um plano progressivo, com pelo menos 7 dias de estudo, 5 questões de múlt
         return $plan;
     }
 
-    public function generateStudyPlanPDF(Request $request): \Illuminate\Http\Response
+    public function generateStudyPlanPDF(Request $request)
     {
         try {
             $validated = $request->validate([
                 'plano' => 'required|array',
-                'tema' => 'required|string'
+                'tema' => 'required|string',
+                'hideAnswers' => 'sometimes|boolean',
             ]);
 
             $studyPlan = $validated['plano'];
             $theme = $validated['tema'];
+            $hideAnswers = $request->boolean('hideAnswers', false);
 
-            // Gerar HTML para o PDF
-            $html = $this->generatePDFHTML($studyPlan, $theme);
+            // Se solicitado, remove respostas e explicações das questões
+            if ($hideAnswers && isset($studyPlan['reviewQuestions']) && is_array($studyPlan['reviewQuestions'])) {
+                foreach ($studyPlan['reviewQuestions'] as &$q) {
+                    unset($q['correctAnswer']);
+                    unset($q['explanation']);
+                }
+                unset($q); // break reference
+            }
 
-            // Para este exemplo, vamos retornar um JSON com o HTML
-            // Em produção, você pode usar uma biblioteca como DomPDF ou wkhtmltopdf
-            return response()->json([
-                'html' => $html,
-                'message' => 'PDF gerado com sucesso'
+            // Garante que livros tenham o campo 'title' preenchido, mesmo se vier como 'nome'
+            if (isset($studyPlan['recommendedBooks']) && is_array($studyPlan['recommendedBooks'])) {
+                foreach ($studyPlan['recommendedBooks'] as &$livro) {
+                    if (empty($livro['title']) && !empty($livro['nome'])) {
+                        $livro['title'] = $livro['nome'];
+                    }
+                }
+                unset($livro);
+            }
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.plano', [
+                'plano' => $studyPlan,
+                'tema' => $theme,
             ]);
 
+            return $pdf->download('plano-estudos.pdf');
+
         } catch (\Exception $e) {
-            Log::error('Erro ao gerar PDF', [
+            \Log::error('Erro ao gerar PDF', [
                 'message' => $e->getMessage()
             ]);
 

@@ -66,7 +66,7 @@ Tema: {$tema}
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
             ])->post('https://api.groq.com/openai/v1/chat/completions', [
-                'model' => 'mixtral-8x7b-32768',
+                'model' => 'llama3-70b-8192',
                 'messages' => [
                     ["role" => "system", "content" => "Você é um assistente especializado em criar flashcards educacionais para veterinários. Responda sempre em formato JSON puro."],
                     ["role" => "user", "content" => $prompt]

@@ -209,11 +209,13 @@ Crie um plano progressivo, com pelo menos 7 dias de estudo, 5 questões de múlt
                 'plano' => 'required|array',
                 'tema' => 'required|string',
                 'hideAnswers' => 'sometimes|boolean',
+                'hideBooks' => 'sometimes|boolean',
             ]);
 
             $studyPlan = $validated['plano'];
             $theme = $validated['tema'];
             $hideAnswers = $request->boolean('hideAnswers', false);
+            $hideBooks = $request->boolean('hideBooks', false);
 
             // Se solicitado, remove respostas e explicações das questões
             if ($hideAnswers && isset($studyPlan['reviewQuestions']) && is_array($studyPlan['reviewQuestions'])) {
@@ -224,14 +226,19 @@ Crie um plano progressivo, com pelo menos 7 dias de estudo, 5 questões de múlt
                 unset($q); // break reference
             }
 
-            // Garante que livros tenham o campo 'title' preenchido, mesmo se vier como 'nome'
-            if (isset($studyPlan['recommendedBooks']) && is_array($studyPlan['recommendedBooks'])) {
-                foreach ($studyPlan['recommendedBooks'] as &$livro) {
-                    if (empty($livro['title']) && !empty($livro['nome'])) {
-                        $livro['title'] = $livro['nome'];
+            // Se solicitado, remove a seção de livros recomendados
+            if ($hideBooks) {
+                unset($studyPlan['recommendedBooks']);
+            } else {
+                // Garante que livros tenham o campo 'title' preenchido, mesmo se vier como 'nome'
+                if (isset($studyPlan['recommendedBooks']) && is_array($studyPlan['recommendedBooks'])) {
+                    foreach ($studyPlan['recommendedBooks'] as &$livro) {
+                        if (empty($livro['title']) && !empty($livro['nome'])) {
+                            $livro['title'] = $livro['nome'];
+                        }
                     }
+                    unset($livro);
                 }
-                unset($livro);
             }
 
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.plano', [

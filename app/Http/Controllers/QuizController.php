@@ -52,6 +52,7 @@ INSTRUÇÕES IMPORTANTES:
 4. Inclua uma explicação educativa detalhada para cada resposta
 5. As perguntas devem ser específicas sobre o tema solicitado
 6. Varie o tipo de pergunta: diagnóstico, tratamento, anatomia, fisiologia, etc.
+7. TODAS AS PERGUNTAS, ALTERNATIVAS E EXPLICAÇÕES DEVEM SER GERADAS EM PORTUGUÊS DO BRASIL. NÃO USE INGLÊS.
 
 IMPORTANTE: Responda APENAS com um JSON válido no formato abaixo, sem explicações ou texto adicional:
 

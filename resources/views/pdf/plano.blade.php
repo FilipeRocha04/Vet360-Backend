@@ -57,17 +57,7 @@
         @endforeach
     @endif
 
-    @if(isset($plano['recommendedBooks']) && count($plano['recommendedBooks']))
-        <h2>Livros Recomendados</h2>
-        @foreach($plano['recommendedBooks'] as $livro)
-            <div class="livro">
-                <strong>{{ $livro['title'] ?? $livro['nome'] ?? 'Título não informado' }}</strong> <br>
-                Autor: {{ $livro['author'] ?? $livro['autor'] ?? '-' }}<br>
-                <span class="destaque">{{ $livro['difficulty'] ?? 'Intermediário' }}</span><br>
-                <span>{{ $livro['description'] ?? '' }}</span>
-            </div>
-        @endforeach
-    @endif
+    {{-- Sessão de livros removida do PDF quando solicitado --}}
 
     @if(isset($plano['studyTips']) && count($plano['studyTips']))
         <h2>Dicas de Estudo</h2>
